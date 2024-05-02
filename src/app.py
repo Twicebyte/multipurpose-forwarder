@@ -24,13 +24,13 @@ class Config:
 
             def __call__(self, r: wrappers.Request) -> str:
                 if self.source == "json":
-                    value = r.json[self.field]
+                    value = r.json.get(self.field)
                 if self.source == "form":
-                    value = r.form[self.field]
+                    value = r.form.get(self.field)
                 if self.source == "args":
-                    value = r.args[self.field]
+                    value = r.args.get(self.field)
                 if self.source == "head":
-                    value = r.headers[self.field]
+                    value = r.headers.get(self.field)
                 if self.source == "const":
                     value = self.field
 
@@ -78,6 +78,15 @@ def create_app():
     """
     application = Flask(__name__)
 
+    @application.route('/', methods=['GET', 'POST'])
+    def index():
+        """
+        The main endpoint for the application.
+        """
+        response = Config.forwarder(request)
+
+        return jsonify(response)
+
     with application.app_context():
         with open("config.yaml", "r", encoding="utf-8") as f:
             Config.forwarder = Config.Forwarder(yaml.safe_load(f))
@@ -86,14 +95,4 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-
-    @app.route('/', methods=['GET', 'POST'])
-    def index():
-        """
-        The main endpoint for the application.
-        """
-        response = Config.forwarder(request)
-
-        return 200, jsonify(response)
-
     app.run(debug=True, port=5000)
