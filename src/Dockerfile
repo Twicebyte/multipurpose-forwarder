@@ -1,6 +1,10 @@
 # Use the official Python 3.11 image as the base image
 FROM python:3.11-slim
 
+LABEL org.opencontainers.image.source=https://github.com/twicebyte/multipurpose-forwarder
+LABEL org.opencontainers.image.description="Multipurpose Forwarder Image"
+LABEL org.opencontainers.image.licenses=MIT
+
 # Set the working directory in the container
 WORKDIR /app
 
